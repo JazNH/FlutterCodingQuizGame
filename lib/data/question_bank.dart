@@ -29,7 +29,7 @@ class QuestionBank {
 
   int randomMediumPhaseEnd(int easyPhaseEnd) {
     final min = max(60, easyPhaseEnd + 1);
-    final maxValue = 62;
+    const maxValue = 62;
     if (min >= maxValue) {
       return min;
     }
@@ -54,7 +54,7 @@ class QuestionBank {
       ),
       Question(
         prompt: 'What is the output of print(type(5))?',
-        options: ['<class int>', '<int>', 'int', '<class \"int\">'],
+        options: ['<class int>', '<int>', 'int', '<class "int">'],
         correctOptionIndexes: {3},
         difficulty: Difficulty.easy,
       ),
