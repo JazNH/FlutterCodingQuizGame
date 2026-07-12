@@ -14,8 +14,8 @@ class AppTheme {
 
     return base.copyWith(
       scaffoldBackgroundColor: const Color(0xFFF3FBFF),
-      cardTheme: CardTheme(
-        color: Colors.white.withOpacity(0.88),
+      cardTheme: CardThemeData(
+        color: Colors.white.withValues(alpha: 0.88),
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
       ),

@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../models/high_score.dart';
 import '../services/storage_service.dart';
-import '../widgets/bubbly_background.dart';
+import '../widgets/study_background.dart';
 
 class HighScoresScreen extends StatefulWidget {
   const HighScoresScreen({super.key});
@@ -38,7 +38,7 @@ class _HighScoresScreenState extends State<HighScoresScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('High Scores')),
-      body: BubblyBackground(
+      body: StudyBackground(
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(20),

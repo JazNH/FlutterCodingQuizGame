@@ -7,6 +7,7 @@ import '../models/app_settings.dart';
 import '../models/question.dart';
 
 enum GameOverReason { wrongAnswer, timeout, completed }
+enum AnswerResult { invalid, correct, wrong, completed }
 
 class QuizController extends ChangeNotifier {
   QuizController({
@@ -24,10 +25,12 @@ class QuizController extends ChangeNotifier {
 
   int _score = 0;
   int _questionNumber = 1;
+  int _answeredCount = 0;
   int _remainingSeconds = 0;
   late final int _easyPhaseEnd;
   late final int _mediumPhaseEnd;
   bool _isGameOver = false;
+  bool _awaitingNextQuestion = false;
   GameOverReason? _gameOverReason;
 
   Question? _currentQuestion;
@@ -35,8 +38,10 @@ class QuizController extends ChangeNotifier {
 
   int get score => _score;
   int get questionNumber => _questionNumber;
+  int get answeredCount => _answeredCount;
   int get remainingSeconds => _remainingSeconds;
   bool get isGameOver => _isGameOver;
+  bool get awaitingNextQuestion => _awaitingNextQuestion;
   GameOverReason? get gameOverReason => _gameOverReason;
   Question get currentQuestion => _currentQuestion!;
   Set<int> get selectedOptions => _selectedOptions;
@@ -58,7 +63,7 @@ class QuizController extends ChangeNotifier {
   }
 
   void toggleOption(int optionIndex) {
-    if (_isGameOver) {
+    if (_isGameOver || _awaitingNextQuestion) {
       return;
     }
 
@@ -83,10 +88,12 @@ class QuizController extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool submitAnswer() {
+  AnswerResult submitAnswer() {
     if (_isGameOver || _currentQuestion == null || _selectedOptions.isEmpty) {
-      return false;
+      return AnswerResult.invalid;
     }
+
+    _answeredCount += 1;
 
     final isCorrect = setEquals(
       _selectedOptions,
@@ -95,18 +102,28 @@ class QuizController extends ChangeNotifier {
 
     if (!isCorrect) {
       _endGame(GameOverReason.wrongAnswer);
-      return false;
+      return AnswerResult.wrong;
     }
 
     _score += 1;
     if (_questionNumber >= maxQuestionNumber) {
       _endGame(GameOverReason.completed);
-      return true;
+      return AnswerResult.completed;
     }
 
+    _awaitingNextQuestion = true;
+    _timer?.cancel();
+    notifyListeners();
+    return AnswerResult.correct;
+  }
+
+  void moveToNextQuestion() {
+    if (_isGameOver || !_awaitingNextQuestion) {
+      return;
+    }
+    _awaitingNextQuestion = false;
     _questionNumber += 1;
     _loadNextQuestion();
-    return true;
   }
 
   void _loadNextQuestion() {
